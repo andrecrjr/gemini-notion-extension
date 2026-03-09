@@ -13,6 +13,7 @@ import { getNotionApiKey } from './credentials.js';
 import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
 import { join, dirname, extname, basename } from 'path';
 import { fileURLToPath } from 'url';
+import { DataSourceResolver } from './utils/data-source-resolver.js';
 
 // Enhanced tools for v3.0
 const enhancedTools = [
@@ -135,6 +136,7 @@ const PROJECT_ROOT = join(__dirname, '..');
 
 // Global Notion client
 let notion: Client;
+let dataSourceResolver: DataSourceResolver;
 let conversationDbId: string;
 let projectDbId: string;
 
@@ -268,13 +270,16 @@ async function paginateQuery(
 
   while (hasMore && allResults.length < maxItems) {
     const response = await withRetry(
-      () => notion.databases.query({
-        database_id: databaseId,
-        filter,
-        sorts,
-        page_size: 100,
-        start_cursor: startCursor,
-      }),
+      async () => {
+        const dataSourceId = await dataSourceResolver.resolve(databaseId);
+        return notion.dataSources.query({
+          data_source_id: dataSourceId,
+          filter,
+          sorts,
+          page_size: 100,
+          start_cursor: startCursor,
+        });
+      },
       3,
       'paginate_query'
     );
@@ -1450,6 +1455,7 @@ async function initialize() {
     }
 
     notion = new Client({ auth: apiKey });
+    dataSourceResolver = new DataSourceResolver(notion);
 
     const cache = loadDatabaseCache();
     conversationDbId = cache.conversationDbId || '';
@@ -1502,7 +1508,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // ==================== SEARCH ====================
       case 'notion_search': {
         const filter = args?.filter === 'all' ? undefined :
-          args?.filter ? { property: 'object' as const, value: args.filter as 'page' | 'database' } : undefined;
+          args?.filter ? { property: 'object' as const, value: args.filter as 'page' | 'data_source' } : undefined;
 
         const results = await withRetry(
           () => notion.search({
@@ -1663,7 +1669,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'list_databases': {
         const results = await withRetry(
           () => notion.search({
-            filter: { property: 'object', value: 'database' },
+            filter: { property: 'object', value: 'data_source' },
             page_size: (args?.limit as number) || 50,
           }),
           3,
@@ -1704,12 +1710,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           results = await paginateQuery(dbId, args?.filter, processedSorts, limit);
         } else {
           const response = await withRetry(
-            () => notion.databases.query({
-              database_id: dbId,
-              filter: args?.filter as any,
-              sorts: processedSorts,
-              page_size: limit,
-            }),
+            async () => {
+              const dataSourceId = await dataSourceResolver.resolve(dbId);
+              return notion.dataSources.query({
+                data_source_id: dataSourceId,
+                filter: args?.filter as any,
+                sorts: processedSorts,
+                page_size: limit,
+              });
+            },
             3,
             'query_database'
           );
@@ -1732,7 +1741,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             parent: { type: 'page_id', page_id: parentId },
             title: [{ type: 'text', text: { content: args?.title as string } }],
             is_inline: args?.isInline as boolean || false,
-            properties: args?.properties as any || defaultProperties,
+            initial_data_source: { properties: args?.properties as any || defaultProperties },
           }),
           3,
           'create_database'
@@ -1746,8 +1755,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const children = args?.content ? markdownToBlocks(args.content as string) : undefined;
 
         const page = await withRetry(
-          () => notion.pages.create({
-            parent: { database_id: dbId },
+          async () => notion.pages.create({
+            parent: { type: 'data_source_id', data_source_id: await dataSourceResolver.resolve(dbId) },
             properties: args?.properties as any,
             children,
           }),
@@ -1761,7 +1770,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_database_schema': {
         const dbId = resolveDatabaseId(args?.databaseId as string);
         const db = await withRetry(
-          () => notion.databases.retrieve({ database_id: dbId }),
+          async () => {
+            const dataSourceId = await dataSourceResolver.resolve(dbId);
+            return notion.dataSources.retrieve({ data_source_id: dataSourceId });
+          },
           3,
           'get_database_schema'
         );
@@ -2008,8 +2020,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             ? [{ property: 'Status', direction: 'ascending' as const }]
             : [{ property: 'Project Name', direction: 'ascending' as const }];
 
-        const results = await notion.databases.query({
-          database_id: projectDbId,
+        const results = await notion.dataSources.query({
+          data_source_id: await dataSourceResolver.resolve(projectDbId),
           filter,
           sorts,
           page_size: (args?.limit as number) || 50,
@@ -2041,7 +2053,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         const page = await notion.pages.create({
-          parent: { database_id: projectDbId },
+          parent: { type: 'data_source_id', data_source_id: await dataSourceResolver.resolve(projectDbId) },
           properties,
         });
 
@@ -2055,8 +2067,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // If it's a name, find the project
         if (!pageId.match(/^[a-f0-9-]{32,36}$/i)) {
-          const search = await notion.databases.query({
-            database_id: projectDbId,
+          const search = await notion.dataSources.query({
+            data_source_id: await dataSourceResolver.resolve(projectDbId),
             filter: { property: 'Project Name', title: { contains: pageId } },
             page_size: 1,
           });
@@ -2111,7 +2123,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         const page = await notion.pages.create({
-          parent: { database_id: conversationDbId },
+          parent: { type: 'data_source_id', data_source_id: await dataSourceResolver.resolve(conversationDbId) },
           properties,
           children: blocks.slice(0, 100), // Notion limit
         });
@@ -2131,8 +2143,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // Find project by name if needed
         if (!projectId.match(/^[a-f0-9-]{32,36}$/i)) {
-          const search = await notion.databases.query({
-            database_id: projectDbId,
+          const search = await notion.dataSources.query({
+            data_source_id: await dataSourceResolver.resolve(projectDbId),
             filter: { property: 'Project Name', title: { contains: projectId } },
             page_size: 1,
           });
@@ -2169,7 +2181,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_recent_changes': {
         const filter = args?.filter === 'all' ? undefined :
-          args?.filter ? { property: 'object' as const, value: args.filter as 'page' | 'database' } : undefined;
+          args?.filter ? { property: 'object' as const, value: args.filter as 'page' | 'data_source' } : undefined;
 
         const results = await notion.search({
           filter,
@@ -2548,9 +2560,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const db = await withRetry(
           () => notion.databases.create({
-            parent: { page_id: parentPageId },
+            parent: { type: 'page_id', page_id: parentPageId },
             title: [{ type: 'text', text: { content: databaseTitle } }],
-            properties: template
+            initial_data_source: { properties: template }
           }),
           3,
           'create_database_from_template'

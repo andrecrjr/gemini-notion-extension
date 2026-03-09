@@ -1,11 +1,20 @@
 // Notion API client wrapper with authentication and error handling
 import { Client } from '@notionhq/client';
+import { DataSourceResolver } from './utils/data-source-resolver.js';
 export class NotionClient {
     client;
     config;
+    resolver;
     constructor(config) {
         this.config = config;
         this.client = new Client({ auth: config.apiKey });
+        this.resolver = new DataSourceResolver(this.client);
+    }
+    /**
+     * Resolves a database ID to its main data source ID
+     */
+    async resolveDataSource(databaseId) {
+        return this.resolver.resolve(databaseId);
     }
     /**
      * Test connection to Notion API by retrieving user info
@@ -60,23 +69,23 @@ export class NotionClient {
      */
     async queryDatabase(params) {
         try {
-            const response = await this.client.databases.query(params);
+            const response = await this.client.dataSources.query(params);
             return response;
         }
         catch (error) {
-            throw new Error(`Failed to query database: ${error.message}`);
+            throw new Error(`Failed to query data source: ${error.message}`);
         }
     }
     /**
      * Retrieve database info
      */
-    async getDatabase(databaseId) {
+    async getDatabase(dataSourceId) {
         try {
-            const response = await this.client.databases.retrieve({ database_id: databaseId });
+            const response = await this.client.dataSources.retrieve({ data_source_id: dataSourceId });
             return response;
         }
         catch (error) {
-            throw new Error(`Failed to retrieve database: ${error.message}`);
+            throw new Error(`Failed to retrieve data source: ${error.message}`);
         }
     }
     /**

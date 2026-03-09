@@ -1,6 +1,6 @@
 {
   "name": "notion-expert",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Notion Expert - Enhanced Notion integration for Gemini CLI - file uploads, automation, monitoring, plus 38+ comprehensive tools",
   "main": "dist/server.js",
   "type": "module",
@@ -33,7 +33,7 @@
     "productivity",
     "document-scanner"
   ],
-  "author": "André Cardoso",
+  "author": "André Carlos Jr.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -45,7 +45,7 @@
   "homepage": "https://github.com/andrecrjr/notion-expert#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "@notionhq/client": "^2.2.15",
+    "@notionhq/client": "^5.12.0",
     "axios": "^1.13.2",
     "dotenv": "^16.4.5",
     "form-data": "^4.0.5",

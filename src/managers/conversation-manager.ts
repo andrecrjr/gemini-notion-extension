@@ -15,7 +15,7 @@ import {
 } from '../types/notion.js';
 
 export class ConversationManager {
-  constructor(private client: NotionClient) {}
+  constructor(private client: NotionClient) { }
 
   /**
    * Export a conversation to Notion
@@ -28,19 +28,19 @@ export class ConversationManager {
       const { messages, metadata } = conversationData;
       const title = options.title || this.generateTitle(messages);
       const tags = options.tags || [];
-      
+
       // Detect code snippets and languages
       const codeSnippets = this.detectCodeSnippets(messages);
       const languages = [...new Set(codeSnippets.map(s => s.language))];
-      
+
       // Generate conversation ID
       const conversationId = this.generateConversationId(metadata);
-      
+
       // Create conversation page in database
       const databaseId = this.client.getConversationDatabaseId();
-      
+
       const page = await this.client.createPage({
-        parent: { database_id: databaseId },
+        parent: { type: 'data_source_id', data_source_id: await this.client.resolveDataSource(databaseId) },
         properties: {
           title: {
             title: [createRichText(title)],
@@ -95,10 +95,10 @@ export class ConversationManager {
   private generateTitle(messages: any[]): string {
     const firstUserMessage = messages.find(m => m.role === 'user');
     if (!firstUserMessage) return 'Gemini Conversation';
-    
+
     const content = firstUserMessage.content.substring(0, 100);
-    return content.length < firstUserMessage.content.length 
-      ? content + '...' 
+    return content.length < firstUserMessage.content.length
+      ? content + '...'
       : content;
   }
 
@@ -106,8 +106,8 @@ export class ConversationManager {
    * Generate unique conversation ID
    */
   private generateConversationId(metadata: any): string {
-    const timestamp = metadata.startTime 
-      ? new Date(metadata.startTime).getTime() 
+    const timestamp = metadata.startTime
+      ? new Date(metadata.startTime).getTime()
       : Date.now();
     return `conv_${timestamp}_${Math.random().toString(36).substring(7)}`;
   }
@@ -139,15 +139,15 @@ export class ConversationManager {
    */
   private formatConversationBlocks(messages: any[]): any[] {
     const blocks: any[] = [];
-    
+
     messages.forEach((message, index) => {
       // Add role heading
       const roleLabel = message.role === 'user' ? '👤 User' : '🤖 Assistant';
       blocks.push(createHeading(roleLabel, 3));
-      
+
       // Split content by code blocks
       const parts = this.splitContentByCodeBlocks(message.content);
-      
+
       parts.forEach(part => {
         if (part.type === 'code') {
           blocks.push(createCodeBlock(part.content, part.language || 'plain text'));
@@ -161,7 +161,7 @@ export class ConversationManager {
           });
         }
       });
-      
+
       // Add divider between messages (except last)
       if (index < messages.length - 1) {
         blocks.push(createDivider());
@@ -177,10 +177,10 @@ export class ConversationManager {
   private splitContentByCodeBlocks(content: string): Array<{ type: 'text' | 'code'; content: string; language?: string }> {
     const parts: Array<{ type: 'text' | 'code'; content: string; language?: string }> = [];
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    
+
     let lastIndex = 0;
     let match;
-    
+
     while ((match = codeBlockRegex.exec(content)) !== null) {
       // Add text before code block
       if (match.index > lastIndex) {
@@ -189,17 +189,17 @@ export class ConversationManager {
           parts.push({ type: 'text', content: textContent });
         }
       }
-      
+
       // Add code block
       parts.push({
         type: 'code',
         content: match[2],
         language: match[1] || 'plain text',
       });
-      
+
       lastIndex = match.index + match[0].length;
     }
-    
+
     // Add remaining text
     if (lastIndex < content.length) {
       const textContent = content.substring(lastIndex).trim();
@@ -207,7 +207,7 @@ export class ConversationManager {
         parts.push({ type: 'text', content: textContent });
       }
     }
-    
+
     return parts;
   }
 

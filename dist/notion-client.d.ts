@@ -1,9 +1,14 @@
-import type { QueryDatabaseParameters, CreatePageParameters, UpdatePageParameters, AppendBlockChildrenParameters, SearchParameters } from '@notionhq/client/build/src/api-endpoints';
+import type { QueryDataSourceParameters, CreatePageParameters, UpdatePageParameters, AppendBlockChildrenParameters, SearchParameters } from '@notionhq/client/build/src/api-endpoints';
 import type { NotionConfig } from './types/config.js';
 export declare class NotionClient {
     private client;
     private config;
+    private resolver;
     constructor(config: NotionConfig);
+    /**
+     * Resolves a database ID to its main data source ID
+     */
+    resolveDataSource(databaseId: string): Promise<string>;
     /**
      * Test connection to Notion API by retrieving user info
      */
@@ -11,35 +16,35 @@ export declare class NotionClient {
     /**
      * Create a new page in a database
      */
-    createPage(params: CreatePageParameters): Promise<import("@notionhq/client/build/src/api-endpoints").CreatePageResponse>;
+    createPage(params: CreatePageParameters): Promise<import("@notionhq/client").CreatePageResponse>;
     /**
      * Update an existing page
      */
-    updatePage(params: UpdatePageParameters): Promise<import("@notionhq/client/build/src/api-endpoints").UpdatePageResponse>;
+    updatePage(params: UpdatePageParameters): Promise<import("@notionhq/client").UpdatePageResponse>;
     /**
      * Retrieve a page by ID
      */
-    getPage(pageId: string): Promise<import("@notionhq/client/build/src/api-endpoints").GetPageResponse>;
+    getPage(pageId: string): Promise<import("@notionhq/client").GetPageResponse>;
     /**
      * Query a database with filters and sorts
      */
-    queryDatabase(params: QueryDatabaseParameters): Promise<import("@notionhq/client/build/src/api-endpoints").QueryDatabaseResponse>;
+    queryDatabase(params: QueryDataSourceParameters): Promise<import("@notionhq/client").QueryDataSourceResponse>;
     /**
      * Retrieve database info
      */
-    getDatabase(databaseId: string): Promise<import("@notionhq/client/build/src/api-endpoints").GetDatabaseResponse>;
+    getDatabase(dataSourceId: string): Promise<import("@notionhq/client").GetDataSourceResponse>;
     /**
      * Append blocks to a page
      */
-    appendBlocks(params: AppendBlockChildrenParameters): Promise<import("@notionhq/client/build/src/api-endpoints").AppendBlockChildrenResponse>;
+    appendBlocks(params: AppendBlockChildrenParameters): Promise<import("@notionhq/client").AppendBlockChildrenResponse>;
     /**
      * Get blocks from a page
      */
-    getBlocks(blockId: string): Promise<import("@notionhq/client/build/src/api-endpoints").ListBlockChildrenResponse>;
+    getBlocks(blockId: string): Promise<import("@notionhq/client").ListBlockChildrenResponse>;
     /**
      * Search across workspace
      */
-    search(params: SearchParameters): Promise<import("@notionhq/client/build/src/api-endpoints").SearchResponse>;
+    search(params: SearchParameters): Promise<import("@notionhq/client").SearchResponse>;
     /**
      * Create a comment on a page or block
      */
@@ -48,7 +53,7 @@ export declare class NotionClient {
             page_id: string;
         };
         rich_text: any[];
-    }): Promise<import("@notionhq/client/build/src/api-endpoints").CreateCommentResponse>;
+    }): Promise<import("@notionhq/client").CreateCommentResponse>;
     /**
      * Get conversation database ID from config
      */

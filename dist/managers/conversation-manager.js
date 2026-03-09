@@ -20,7 +20,7 @@ export class ConversationManager {
             // Create conversation page in database
             const databaseId = this.client.getConversationDatabaseId();
             const page = await this.client.createPage({
-                parent: { database_id: databaseId },
+                parent: { type: 'data_source_id', data_source_id: await this.client.resolveDataSource(databaseId) },
                 properties: {
                     title: {
                         title: [createRichText(title)],

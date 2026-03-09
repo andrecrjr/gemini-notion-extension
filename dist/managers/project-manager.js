@@ -44,7 +44,7 @@ export class ProjectManager {
             };
         }
         const page = await this.client.createPage({
-            parent: { database_id: databaseId },
+            parent: { type: 'data_source_id', data_source_id: await this.client.resolveDataSource(databaseId) },
             properties,
         });
         return this.parseProjectFromPage(page);
@@ -107,7 +107,7 @@ export class ProjectManager {
         // Search by name
         const databaseId = this.client.getProjectDatabaseId();
         const response = await this.client.queryDatabase({
-            database_id: databaseId,
+            data_source_id: await this.client.resolveDataSource(databaseId),
             filter: {
                 property: 'Project Name',
                 title: {
@@ -126,7 +126,7 @@ export class ProjectManager {
     async listProjects(options = {}) {
         const databaseId = this.client.getProjectDatabaseId();
         const queryParams = {
-            database_id: databaseId,
+            data_source_id: await this.client.resolveDataSource(databaseId),
         };
         // Add filters
         if (options.status) {

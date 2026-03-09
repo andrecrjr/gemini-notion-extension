@@ -11,14 +11,14 @@ import type {
 import { createRichText } from '../types/notion.js';
 
 export class ProjectManager {
-  constructor(private client: NotionClient) {}
+  constructor(private client: NotionClient) { }
 
   /**
    * Create a new project
    */
   async createProject(input: ProjectCreateInput): Promise<Project> {
     const databaseId = this.client.getProjectDatabaseId();
-    
+
     const properties: any = {
       'Project Name': {
         title: [createRichText(input.name)],
@@ -60,7 +60,7 @@ export class ProjectManager {
     }
 
     const page = await this.client.createPage({
-      parent: { database_id: databaseId },
+      parent: { type: 'data_source_id', data_source_id: await this.client.resolveDataSource(databaseId) },
       properties,
     });
 
@@ -136,7 +136,7 @@ export class ProjectManager {
     // Search by name
     const databaseId = this.client.getProjectDatabaseId();
     const response = await this.client.queryDatabase({
-      database_id: databaseId,
+      data_source_id: await this.client.resolveDataSource(databaseId),
       filter: {
         property: 'Project Name',
         title: {
@@ -157,9 +157,9 @@ export class ProjectManager {
    */
   async listProjects(options: ProjectQueryOptions = {}): Promise<Project[]> {
     const databaseId = this.client.getProjectDatabaseId();
-    
+
     const queryParams: any = {
-      database_id: databaseId,
+      data_source_id: await this.client.resolveDataSource(databaseId),
     };
 
     // Add filters
@@ -179,7 +179,7 @@ export class ProjectManager {
         startDate: 'Start Date',
         lastActivity: 'Last Activity',
       };
-      
+
       queryParams.sorts = [
         {
           property: propertyMap[options.sortBy],
@@ -189,7 +189,7 @@ export class ProjectManager {
     }
 
     const response = await this.client.queryDatabase(queryParams);
-    
+
     return response.results.map((page: any) => this.parseProjectFromPage(page));
   }
 
@@ -204,7 +204,7 @@ export class ProjectManager {
     try {
       // Get project
       const project = await this.getProject(projectNameOrId);
-      
+
       // Update conversation with project relation
       await this.client.updatePage({
         page_id: conversationId,
@@ -243,24 +243,24 @@ export class ProjectManager {
    */
   private parseProjectFromPage(page: any): Project {
     const props = page.properties;
-    
+
     return {
       id: page.id,
       name: props['Project Name']?.title?.[0]?.plain_text || 'Untitled',
       description: props['Description']?.rich_text?.[0]?.plain_text,
       status: props['Status']?.select?.name as ProjectStatus,
-      startDate: props['Start Date']?.date?.start 
-        ? new Date(props['Start Date'].date.start) 
+      startDate: props['Start Date']?.date?.start
+        ? new Date(props['Start Date'].date.start)
         : undefined,
-      targetCompletion: props['Target Completion']?.date?.start 
-        ? new Date(props['Target Completion'].date.start) 
+      targetCompletion: props['Target Completion']?.date?.start
+        ? new Date(props['Target Completion'].date.start)
         : undefined,
       technologies: props['Key Technologies']?.multi_select?.map((t: any) => t.name) || [],
       githubRepo: props['GitHub Repository']?.url,
       owner: props['Owner']?.people?.[0]?.name,
       conversationCount: props['Conversation Count']?.rollup?.number || 0,
-      lastActivity: props['Last Activity']?.date?.start 
-        ? new Date(props['Last Activity'].date.start) 
+      lastActivity: props['Last Activity']?.date?.start
+        ? new Date(props['Last Activity'].date.start)
         : undefined,
     };
   }

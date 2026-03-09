@@ -1,21 +1,31 @@
 // Notion API client wrapper with authentication and error handling
 import { Client } from '@notionhq/client';
 import type {
-  QueryDatabaseParameters,
+  QueryDataSourceParameters,
   CreatePageParameters,
   UpdatePageParameters,
   AppendBlockChildrenParameters,
   SearchParameters,
 } from '@notionhq/client/build/src/api-endpoints';
 import type { NotionConfig } from './types/config.js';
+import { DataSourceResolver } from './utils/data-source-resolver.js';
 
 export class NotionClient {
   private client: Client;
   private config: NotionConfig;
+  private resolver: DataSourceResolver;
 
   constructor(config: NotionConfig) {
     this.config = config;
     this.client = new Client({ auth: config.apiKey });
+    this.resolver = new DataSourceResolver(this.client);
+  }
+
+  /**
+   * Resolves a database ID to its main data source ID
+   */
+  async resolveDataSource(databaseId: string): Promise<string> {
+    return this.resolver.resolve(databaseId);
   }
 
   /**
@@ -71,24 +81,24 @@ export class NotionClient {
   /**
    * Query a database with filters and sorts
    */
-  async queryDatabase(params: QueryDatabaseParameters) {
+  async queryDatabase(params: QueryDataSourceParameters) {
     try {
-      const response = await this.client.databases.query(params);
+      const response = await this.client.dataSources.query(params);
       return response;
     } catch (error: any) {
-      throw new Error(`Failed to query database: ${error.message}`);
+      throw new Error(`Failed to query data source: ${error.message}`);
     }
   }
 
   /**
    * Retrieve database info
    */
-  async getDatabase(databaseId: string) {
+  async getDatabase(dataSourceId: string) {
     try {
-      const response = await this.client.databases.retrieve({ database_id: databaseId });
+      const response = await this.client.dataSources.retrieve({ data_source_id: dataSourceId });
       return response;
     } catch (error: any) {
-      throw new Error(`Failed to retrieve database: ${error.message}`);
+      throw new Error(`Failed to retrieve data source: ${error.message}`);
     }
   }
 
@@ -170,9 +180,9 @@ export async function initializeNotionClient(config: NotionConfig): Promise<Noti
   }
 
   const client = new NotionClient(config);
-  
+
   // Validate connection on initialization
   await client.validateConnection();
-  
+
   return client;
 }
