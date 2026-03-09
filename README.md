@@ -1,137 +1,70 @@
 # 📝 Notion Expert v3.0.4 Enhanced Edition
 
-> Complete Notion workspace automation with [Gemini CLI](https://github.com/google-gemini/gemini-cli) via Model Context Protocol (MCP).
+> Complete Notion workspace automation via Model Context Protocol (MCP). Works with [Gemini CLI](https://github.com/google-gemini/gemini-cli) and [Qwen Code](https://github.com/QwenLM/qwen-code).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-[![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-Extension-blue.svg)](https://github.com/google-gemini/gemini-cli)
+[![MCP](https://img.shields.io/badge/MCP-Server-purple.svg)](https://modelcontextprotocol.io/)
 [![Version](https://img.shields.io/badge/Version-3.0.4-brightgreen.svg)](https://github.com/PatelPratikkumar/gemini-notion-expert/releases)
 
-Transform your Notion workspace into a powerful automation hub with 46 comprehensive tools, file processing, database templates, and intelligent monitoring.
+Transform your Notion workspace into a powerful automation hub with **46 comprehensive tools**, file processing, database templates, and intelligent monitoring.
 
-## ✨ v3.0.3 Enhanced Features (Bug Fix Release)
+---
 
-- **🔧 Critical Fix**: MCP server registration for proper Gemini CLI tool discovery
-- **🐛 Fixed upload_file_to_notion**: Honest implementation with proper file handling modes
-- **🐛 Improved Error Handling**: Better database parent resolution for create_page function
-- **🚀 46 MCP Tools** (38 core + 8 enhanced) covering all Notion operations
-- **📄 File Processing** - Bulk upload, automated scanning, file monitoring
-- **🎯 Database Templates** - Pre-configured schemas for common workflows
-- **📊 Health Analytics** - API monitoring, usage statistics, performance tracking
-- **🤖 Automation Ready** - File watchers, bulk operations, rate limiting
-- **🔄 Production Stable** - Built on proven v2.8 foundation with enhanced capabilities
-- **📝 Markdown Support** - Advanced content conversion with block chunking
-- **🔍 Smart Search** - Enhanced search with analytics and filtering
-- **🔐 Secure Storage** - Cross-platform credential management
-- **🎙️ Voice-Friendly** - Handles transcription errors gracefully
+## ✨ Quick Start (3 Steps)
 
-### New in v3.0.3: Enhanced Tool Categories + Bug Fixes
+**For Gemini CLI:**
+```bash
+# 1. Install the extension
+gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
 
-| Category | Tools | Examples |
-|----------|-------|----------|
-| **🔧 Core Notion** | 38 tools | search, create_page, query_database, comments |
-| **📄 File Operations** | 4 tools | upload_file_to_notion, bulk_create_pages_from_files |
-| **🎯 Database Templates** | 1 tool | create_database_from_template (4 templates) |
-| **📊 Health & Analytics** | 2 tools | check_api_health, get_usage_statistics |
-| **🔍 Enhanced Search** | 1 tool | advanced_search (with analytics) |
-| **Total** | **46 tools** | Complete workspace automation |
+# 2. Gemini CLI will prompt you for your Notion API key
+# Get your token from: https://www.notion.so/my-integrations
+
+# 3. Verify installation
+gemini mcp list
+```
+
+**For Qwen Code:**
+```bash
+# 1. Register as MCP server
+qwen mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js"
+
+# 2. Set environment variable
+export NOTION_API_KEY="ntn_your_token_here"
+
+# 3. Verify installation
+qwen mcp list
+```
+
+That's it! You're ready to use Notion with your AI assistant. 🎉
 
 ---
 
 ## 📋 Prerequisites
 
-Before installing, you need:
-
-1. **Node.js 18+** - [Download here](https://nodejs.org/)
-2. **Gemini CLI** - Install globally:
-   ```bash
-   npm install -g @google/gemini-cli
-   ```
-3. **Notion Integration Token** - Get yours below 👇
+- **Node.js 18+** - [Download here](https://nodejs.org/)
+- **AI CLI Client** - Choose one:
+  - [Gemini CLI](https://github.com/google-gemini/gemini-cli): `npm install -g @google/gemini-cli`
+  - [Qwen Code](https://github.com/QwenLM/qwen-code): Follow installation instructions
+- **Notion Integration Token** - Get yours below 👇
 
 ---
 
 ## 🔐 Getting Your Notion API Token
 
-1. Log in to [Notion](https://www.notion.so)
-2. Go to [My Integrations](https://www.notion.so/my-integrations)
-3. Click **"+ New integration"**
-4. Configure:
+1. Go to [Notion Integrations](https://www.notion.so/my-integrations)
+2. Click **"+ New integration"**
+3. Configure:
    - **Name**: `Gemini CLI Extension`
    - **Associated workspace**: Select your workspace
    - **Capabilities**: Check all Content, Comment, and User capabilities
-5. Click **"Submit"**
-6. Copy the **Internal Integration Token** (starts with `secret_`)
+4. Click **"Submit"**
+5. Copy the **Internal Integration Token** (starts with `ntn_` or `secret_`)
 
 > ⚠️ **Keep your token secret!** Never share it or commit it to git.
 
----
-
-## 🚀 Installation & Setup
-
-### 📖 **IMPORTANT: Two-Step Installation Process**
-
-The Notion extension requires **both extension installation AND MCP server registration** for tools to work:
-
-1. **Extension Installation**: Provides metadata, commands, and context
-2. **MCP Server Registration**: Enables the 46 Notion tools in Gemini CLI
-
-**If you skip step 2, you'll get "Tool not found" errors.**
-
----
-
-### 🏃‍♂️ **Quick Setup (Recommended)**
-
-```bash
-# 1. Install extension with auto-update
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-
-# 2. Get your Notion API token (see section below)
-# Set as environment variable:
-setx NOTION_API_KEY "your_notion_token_here"  # Windows
-export NOTION_API_KEY="your_notion_token_here"  # macOS/Linux
-
-# 3. Register MCP server for tool access
-gemini mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" -e NOTION_API_KEY="${NOTION_API_KEY}" --timeout 30000 -s user
-
-# 4. Verify installation
-gemini mcp list
-# Should show: ✓ notion: ... - Connected
-
-# 5. Test tools
-echo "List my Notion databases" | gemini chat
-```
-
----
-
-### 📋 **Prerequisites**
-
-Before installing, ensure you have:
-
-1. **Node.js 18+** - [Download here](https://nodejs.org/)
-2. **Gemini CLI** - Install globally:
-   ```bash
-   npm install -g @google/gemini-cli
-   ```
-3. **Notion Integration Token** - Get yours below 👇
-
----
-
-### 🔐 **Getting Your Notion API Token**
-
-1. Log in to [Notion](https://www.notion.so)
-2. Go to [My Integrations](https://www.notion.so/my-integrations)
-3. Click **"+ New integration"**
-4. Configure:
-   - **Name**: `Gemini CLI Extension`
-   - **Associated workspace**: Select your workspace
-   - **Capabilities**: Check all Content, Comment, and User capabilities
-5. Click **"Submit"**
-6. Copy the **Internal Integration Token** (starts with `ntn_`)
-
-> ⚠️ **Keep your token secret!** Never share it or commit it to git.
-
-### 🔗 **Share Pages with Integration**
+### 🔗 Share Pages with Integration
 
 In Notion, grant access to pages/databases you want to use:
 1. Open a page or database
@@ -141,522 +74,243 @@ In Notion, grant access to pages/databases you want to use:
 
 ---
 
-### 🎯 **Installation Methods**
+## ✅ Verify Installation
 
-#### **Method A: Auto-Update Installation (Recommended)**
+**Gemini CLI:**
+```bash
+# Check extension is installed
+gemini extensions list
 
-**For production use with automatic updates:**
+# Check MCP server is connected
+gemini mcp list
+
+# Test with a simple query
+echo "List my Notion databases" | gemini chat
+```
+
+**Qwen Code:**
+```bash
+# Check MCP server is connected
+qwen mcp list
+
+# Test with a simple query
+echo "List my Notion databases" | qwen chat
+```
+
+**Expected output:**
+- Extension shows as installed: `✓ notion-expert v3.0.4`
+- MCP server connected: `✓ notion: ... - Connected`
+- Your databases are listed
+
+---
+
+## 🚀 What You Can Do
+
+### Quick Examples
+
+**Gemini CLI:**
+```bash
+# Database operations
+echo "Show me all my Notion databases" | gemini chat
+echo "Query my Tasks database for incomplete items" | gemini chat
+
+# Page operations
+echo "Create a meeting notes page titled 'Project Kickoff'" | gemini chat
+echo "Search for pages about API design" | gemini chat
+
+# Advanced features
+echo "Create a document scanner database" | gemini chat
+echo "Check API health status" | gemini chat
+```
+
+**Qwen Code:**
+```bash
+# Database operations
+echo "Show me all my Notion databases" | qwen chat
+echo "Query my Tasks database for incomplete items" | qwen chat
+
+# Page operations
+echo "Create a meeting notes page titled 'Project Kickoff'" | qwen chat
+echo "Search for pages about API design" | qwen chat
+
+# Advanced features
+echo "Create a document scanner database" | qwen chat
+echo "Check API health status" | qwen chat
+```
+
+### 📊 46 Available Tools
+
+| Category | Tools | Examples |
+|----------|-------|----------|
+| **🔧 Core Notion** | 38 tools | search, create_page, query_database, comments |
+| **📄 File Operations** | 4 tools | upload_file_to_notion, bulk_create_pages_from_files |
+| **🎯 Database Templates** | 1 tool | create_database_from_template (4 templates) |
+| **📊 Health & Analytics** | 2 tools | check_api_health, get_usage_statistics |
+| **🔍 Enhanced Search** | 1 tool | advanced_search (with analytics) |
+
+**Database Templates Available:**
+- **Document Scanner** - Perfect for PDF automation
+- **Project Tracker** - Complete project management
+- **Meeting Notes** - Structured meetings
+- **Task Management** - Task tracking
+
+---
+
+## 🗑️ Uninstallation
 
 ```bash
-# 1. Install extension from GitHub
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
+# Remove MCP server
+gemini mcp remove notion
 
-# 2. Set environment variable (choose your OS)
-# Windows (PowerShell - restart terminal after):
-setx NOTION_API_KEY "ntn_your_token_here"
+# Uninstall extension
+gemini extensions uninstall notion-expert
+```
 
-# macOS/Linux (add to ~/.bashrc or ~/.zshrc):
-echo 'export NOTION_API_KEY="ntn_your_token_here"' >> ~/.bashrc
-source ~/.bashrc
+---
 
-# 3. Register MCP server (critical step!)
+## 🔧 Troubleshooting
+
+| Error | Solution |
+|-------|----------|
+| `Tool "notion_*" not found` | Register MCP server: `gemini mcp add notion` or `qwen mcp add notion` |
+| `MCP server disconnected` | Check Node.js version (18+) and increase timeout |
+| `Unauthorized` | Verify token is valid and pages are shared |
+| `No databases found` | Share databases with integration in Notion |
+
+### Common Issues
+
+**"Tool not found" Errors:**
+```bash
+# Register MCP server manually (Gemini CLI)
 gemini mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" \
   -e NOTION_API_KEY="${NOTION_API_KEY}" \
   --timeout 30000 \
   -s user
 
-# 4. Verify setup
-gemini mcp list
-echo "What Notion tools do you have?" | gemini chat
-```
-
-**Future updates:**
-```bash
-# Update extension
-gemini extensions update notion-expert
-
-# MCP server automatically uses updated code
-# No additional steps needed
-```
-
-#### **Method B: Development Installation**
-
-**For local development and custom modifications:**
-
-```bash
-# 1. Clone repository
-git clone https://github.com/PatelPratikkumar/gemini-notion-expert.git
-cd gemini-notion-expert
-
-# 2. Install dependencies
-npm install
-
-# 3. Set environment variable
-# Windows:
-setx NOTION_API_KEY "ntn_your_token_here"
-
-# macOS/Linux:
-echo 'export NOTION_API_KEY="ntn_your_token_here"' >> ~/.bashrc
-source ~/.bashrc
-
-# 4. Build extension
-npm run build
-
-# 5. Link extension
-gemini extensions link .
-
-# 6. Register MCP server with local path
-gemini mcp add notion node "$(pwd)/dist/bundle.js" \
+# Register MCP server manually (Qwen Code)
+qwen mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" \
   -e NOTION_API_KEY="${NOTION_API_KEY}" \
-  --timeout 30000 \
-  -s user
-
-# 7. Verify setup
-gemini mcp list
+  --timeout 30000
 ```
 
-**Development workflow:**
+**Invalid Token:**
 ```bash
-# After making changes:
-npm run build
-
-# MCP server automatically uses updated code
-# No need to re-register
+# Test your token
+curl -H "Authorization: Bearer $NOTION_API_KEY" \
+     -H "Notion-Version: 2022-06-28" \
+     https://api.notion.com/v1/users/me
 ```
 
-#### **Method C: Automated Setup Script**
+**Pages Not Accessible:**
+- Open the page in Notion
+- Click **Share** → **Add connections**
+- Select **Gemini CLI Extension**
 
-**For guided setup with automatic configuration:**
+---
+
+## 📦 Optional: Setup Scripts
+
+For automated database configuration, run the setup script:
 
 ```bash
-# 1. Install extension
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-
-# 2. Navigate to extension directory
+# Navigate to extension directory
 cd ~/.gemini/extensions/notion-expert
 
-# 3. Run setup script (guides you through token setup and database configuration)
+# Run setup (guides you through database selection/creation)
 # Windows:
 .\setup-windows.ps1
 
 # macOS/Linux:
 chmod +x setup-unix.sh && ./setup-unix.sh
-
-# 4. Register MCP server (still required after setup)
-gemini mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" \
-  -e NOTION_API_KEY="${NOTION_API_KEY}" \
-  --timeout 30000 \
-  -s user
 ```
+
+**What it does:**
+- Discovers your existing databases
+- Auto-detects conversation/project databases
+- Creates databases if needed
+- Stores configuration locally
+
+**Note:** Setup scripts are **optional** - the extension works without them.
 
 ---
 
-## 🗑️ **Uninstallation**
+## 📄 License
 
-### **Complete Removal**
-
-```bash
-# 1. Remove MCP server
-gemini mcp remove notion
-
-# 2. Uninstall extension
-gemini extensions uninstall notion-expert
-
-# 3. Clean environment variables (optional)
-# Windows:
-reg delete "HKCU\Environment" /v "NOTION_API_KEY" /f
-
-# macOS/Linux (remove line from ~/.bashrc):
-grep -v "NOTION_API_KEY" ~/.bashrc > ~/.bashrc.tmp && mv ~/.bashrc.tmp ~/.bashrc
-source ~/.bashrc
-
-# 4. Remove cached data (optional)
-rm ~/.notion-cache.json  # If exists
-rm ~/.gemini/extensions/notion-expert/ -rf  # If exists
-```
-
-### **Partial Removal (Keep Extension, Remove MCP Server)**
-
-```bash
-# Remove MCP server only (keeps extension for context/commands)
-gemini mcp remove notion
-
-# Extension remains available but tools won't work
-# To restore tools, re-run: gemini mcp add notion...
-```
+MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
-## 🔧 **Troubleshooting**
+## 🤝 Contributing
 
-### **"Tool not found" Errors**
-
-**Symptom**: Extension shows as loaded but Notion tools don't work
-
-```bash
-# 1. Check if MCP server is registered
-gemini mcp list
-# Should show: ✓ notion: ... - Connected
-
-# 2. If missing or disconnected, register MCP server:
-gemini mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" \
-  -e NOTION_API_KEY="${NOTION_API_KEY}" \
-  --timeout 30000 \
-  -s user
-
-# 3. Verify environment variable
-echo $NOTION_API_KEY  # Should start with 'secret_' or 'ntn_'
-
-# 4. Test connection
-echo "List my Notion databases" | gemini chat
-```
-
-### **MCP Server Disconnected**
-
-**Symptom**: `gemini mcp list` shows "Disconnected" or "Failed"
-
-```bash
-# 1. Check MCP server logs
-gemini mcp logs notion
-
-# 2. Increase timeout and re-register
-gemini mcp remove notion
-gemini mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" \
-  -e NOTION_API_KEY="${NOTION_API_KEY}" \
-  --timeout 60000 \
-  -s user
-
-# 3. Check Node.js version (requires 18+)
-node --version
-```
-
-### **Invalid Notion Token**
-
-**Symptom**: "Unauthorized" or "Invalid token" errors
-
-```bash
-# 1. Verify token format
-echo $NOTION_API_KEY
-# Should start with 'secret_' (old format) or 'ntn_' (new format)
-
-# 2. Test token directly
-curl -H "Authorization: Bearer $NOTION_API_KEY" \
-     -H "Notion-Version: 2022-06-28" \
-     https://api.notion.com/v1/users/me
-
-# 3. If invalid, get new token from Notion integrations
-# Then update environment variable:
-setx NOTION_API_KEY "your_new_token"  # Windows
-export NOTION_API_KEY="your_new_token"  # macOS/Linux
-```
-
-### **Extension Version Conflicts**
-
-**Symptom**: Tools work intermittently after updates
-
-```bash
-# 1. Check extension versions
-gemini extensions list
-
-# 2. Force clean reinstall
-gemini extensions uninstall notion-expert
-gemini mcp remove notion
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-
-# 3. Re-register MCP server with updated path
-gemini mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js" \
-  -e NOTION_API_KEY="${NOTION_API_KEY}" \
-  --timeout 30000 \
-  -s user
-```
-
-### **Environment Variable Issues**
-
-**Windows PowerShell:**
-```powershell
-# Check if variable exists
-echo $env:NOTION_API_KEY
-
-# Set permanently
-[Environment]::SetEnvironmentVariable("NOTION_API_KEY", "your_token", "User")
-
-# Restart PowerShell/terminal after setting
-```
-
-**macOS/Linux:**
-```bash
-# Check if variable exists
-echo $NOTION_API_KEY
-
-# Add to shell profile (choose your shell)
-echo 'export NOTION_API_KEY="your_token"' >> ~/.bashrc  # Bash
-echo 'export NOTION_API_KEY="your_token"' >> ~/.zshrc   # Zsh
-source ~/.bashrc  # Or ~/.zshrc
-```
-
-### **Common Error Messages**
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `Tool "notion_list_databases" not found` | MCP server not registered | Run `gemini mcp add notion...` |
-| `MCP server 'notion' failed to start` | Invalid bundle path or environment | Check file path and `$NOTION_API_KEY` |
-| `Request timed out` | Slow Notion API response | Increase `--timeout` to 60000 |
-| `Unauthorized` | Invalid/expired token | Get new token from Notion integrations |
-| `No databases found` | Pages not shared with integration | Share pages in Notion |
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
 ---
 
-## ✅ **Testing Your Installation**
+## 🙏 Acknowledgments
 
-### **Quick Verification**
-
-```bash
-# 1. Check extension status
-gemini extensions list
-# Should show: ✓ notion-expert v3.0.3
-
-# 2. Check MCP server status
-gemini mcp list
-# Should show: ✓ notion: ... - Connected
-
-# 3. Test tool registry
-echo "What Notion tools do you have available?" | gemini chat
-# Should list 46 Notion tools
-
-# 4. Test basic functionality
-echo "List my Notion databases" | gemini chat
-# Should show your accessible databases
-```
-
-### **Comprehensive Testing**
-
-```bash
-# Database operations
-echo "Show me all my Notion databases with their properties" | gemini chat
-echo "Query my Tasks database for incomplete items" | gemini chat
-
-# Page operations
-echo "Create a test page called 'Gemini CLI Test' with some content" | gemini chat
-echo "Search for pages containing 'test'" | gemini chat
-
-# Advanced features
-echo "Get analytics for my most accessed database" | gemini chat
-echo "Export my Tasks database to CSV format" | gemini chat
-```
-
-### **Expected Results**
-
-✅ **Working Installation**:
-- Extension appears in `gemini extensions list`
-- MCP server shows as "Connected" in `gemini mcp list`
-- All 46 Notion tools are available and functional
-- Can list databases, create pages, and search content
-
-❌ **Common Issues**:
-- **"Tool not found"** = MCP server not registered (run `gemini mcp add...`)
-- **"Unauthorized"** = Invalid token or pages not shared
-- **"Disconnected"** = Check Node.js version and increase timeout
+- [Gemini CLI](https://github.com/google-gemini/gemini-cli) by Google
+- [Qwen Code](https://github.com/QwenLM/qwen-code) by Alibaba
+- [Notion API](https://developers.notion.com/) by Notion
+- [Model Context Protocol](https://modelcontextprotocol.io/) for MCP server framework
 
 ---
 
-## � Extension Management & Updates
-
-### Updating the Extension
-
-The update method depends on how you installed the extension:
-
-#### Git-Installed Extensions (Automatic Updates Available ✅)
-If installed with `gemini extensions install https://...`:
-```bash
-# Update specific extension to latest version
-gemini extensions update notion-expert
-
-# Update all extensions at once
-gemini extensions update --all
-```
-
-#### Locally Linked Extensions (Manual Updates Required 🔧)
-If installed with `gemini extensions link .` (development):
-```bash
-cd /path/to/your/gemini-notion-expert
-git pull origin main
-npm install
-npm run build
-# Extension automatically reflects changes
-```
-
-#### Force Reinstall from GitHub
-```bash
-# For any issues or switching from local to git-managed
-gemini extensions uninstall notion-expert
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-```
-
-### Extension Management Commands
-
-```bash
-# List all installed extensions
-gemini extensions list
-
-# Check extension status and info
-gemini extensions list | grep notion-expert
-
-# Disable temporarily (keeps configuration)
-gemini extensions disable notion-expert
-
-# Re-enable extension
-gemini extensions enable notion-expert
-
-# Completely remove extension
-gemini extensions uninstall notion-expert
-
-# Validate extension integrity
-gemini extensions validate .
-```
-
-### Auto-Update Setup
-
-For automatic updates when installing:
-```bash
-# Install with auto-update enabled
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-```
-
-### Version Checking
-
-```bash
-# Check current version
-gemini extensions list | grep notion-expert
-
-# View extension details
-cd ~/.gemini/extensions/notion-expert
-cat package.json | grep version
-```
-
----
-
-## �🛠️ Complete Tool Reference (46 Tools)
+## 📚 Complete Tool Reference
 
 ### 🔧 Core Notion Operations (38 Tools)
 
 #### Search & Discovery
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `notion_search` | Search pages and databases by name or content | "Search for pages about API design" |
-| `advanced_search` | Enhanced search with analytics and filtering | "Find all project docs with analytics" |
+- `notion_search` - Search pages and databases by name or content
+- `advanced_search` - Enhanced search with analytics and filtering
 
-#### Page Management  
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `create_page` | Create new pages with markdown content | "Create a meeting notes page" |
-| `get_page` | Retrieve page properties and content | "Show me the project overview page" |
-| `update_page` | Modify title, icon, cover, properties | "Update the project status" |
-| `archive_page` | Archive (soft delete) pages | "Archive completed project pages" |
-| `restore_page` | Restore archived pages | "Restore the archived design doc" |
-| `duplicate_page` | Copy pages with all content | "Duplicate the template page" |
+#### Page Management
+- `create_page` - Create new pages with markdown content
+- `get_page` - Retrieve page properties and content
+- `update_page` - Modify title, icon, cover, properties
+- `archive_page` - Archive (soft delete) pages
+- `restore_page` - Restore archived pages
+- `duplicate_page` - Copy pages with all content
 
 #### Database Operations
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `list_databases` | List all accessible databases | "Show all my databases" |
-| `get_database` | Get database schema and properties | "Show the project database structure" |
-| `query_database` | Filter and sort database entries | "Show active projects sorted by date" |
-| `create_database` | Create new databases with custom schema | "Create a task tracking database" |
-| `update_database` | Modify database properties and schema | "Add a priority field to tasks" |
+- `list_databases` - List all accessible databases
+- `get_database` - Get database schema and properties
+- `query_database` - Filter and sort database entries
+- `create_database` - Create new databases with custom schema
+- `update_database` - Modify database properties and schema
 
 #### Block & Content Management
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `get_page_blocks` | Read page content as structured blocks | "Get the content of the meeting notes" |
-| `append_blocks` | Add content (markdown supported) | "Add action items to the page" |
-| `update_block` | Modify existing blocks | "Update the project timeline" |
-| `delete_block` | Remove specific blocks | "Remove the old requirements section" |
+- `get_page_blocks` - Read page content as structured blocks
+- `append_blocks` - Add content (markdown supported)
+- `update_block` - Modify existing blocks
+- `delete_block` - Remove specific blocks
 
 #### Comments & Collaboration
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `get_comments` | Read all comments on a page | "Show comments on the proposal" |
-| `create_comment` | Add comments to pages | "Add feedback to the design doc" |
+- `get_comments` - Read all comments on a page
+- `create_comment` - Add comments to pages
 
 #### Users & Workspace
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `get_user` | Get current user information | "Show my Notion account info" |
-| `list_users` | List all workspace members | "Who has access to this workspace?" |
+- `get_user` - Get current user information
+- `list_users` - List all workspace members
 
-### 🚀 Enhanced Operations (8 New Tools)
+### 🚀 Enhanced Operations (8 Tools)
 
-#### 📄 File Processing & Automation
-| Tool | Description | Example Usage |
-|------|-------------|---------------|
-| `upload_file_to_notion` | Upload files with metadata extraction | "Upload the PDF contract to the legal database" |
-| `bulk_create_pages_from_files` | Process multiple files into database entries | "Create pages for all PDFs in the contracts folder" |
-| `start_file_watcher` | Monitor folders for new files (framework ready) | "Watch the scans folder for new documents" |
-| `stop_file_watcher` | Stop file monitoring processes | "Stop watching the downloads folder" |
-| `list_active_watchers` | List all active file monitors | "Show all active file watchers" |
+#### File Processing
+- `upload_file_to_notion` - Upload files with metadata extraction
+- `bulk_create_pages_from_files` - Process multiple files into database entries
+- `start_file_watcher` - Monitor folders for new files
+- `stop_file_watcher` - Stop file monitoring processes
+- `list_active_watchers` - List all active file monitors
 
-#### 🎯 Database Templates
-| Tool | Description | Templates Available |
-|------|-------------|---------------------|
-| `create_database_from_template` | Create databases with pre-configured schemas | **Document Scanner**, Project Tracker, Meeting Notes, Task Management |
+#### Database Templates
+- `create_database_from_template` - Create databases with pre-configured schemas
 
-**Template Details:**
-- **Document Scanner** - Perfect for PDF automation (Name, File Path, Upload Date, Document Type, Status, Notes)
-- **Project Tracker** - Complete project management (Name, Status, Description, Dates, Priority)  
-- **Meeting Notes** - Structured meetings (Title, Date, Participants, Meeting Type, Action Items)
-- **Task Management** - Task tracking (Task, Status, Priority, Assignee, Due Date, Tags)
-
-#### 📊 Health & Analytics
-| Tool | Description | Monitoring Features |
-|------|-------------|---------------------|
-| `check_api_health` | Comprehensive API health monitoring | Connectivity, latency, uptime, error rates |
-| `get_usage_statistics` | Detailed API usage analytics | Request counts, performance metrics, feature usage |
-
----
-
-## 🎯 Enhanced Workflow Examples
-
-### 📄 Document Automation Workflow
-```bash
-# 1. Create a document scanning database
-"Create a document scanner database called 'Legal Documents' in my workspace"
-
-# 2. Bulk process PDF files
-"Process all PDF files in my Downloads/Contracts folder and create database entries"
-
-# 3. Start monitoring for new files
-"Start watching Downloads/Scans folder for new PDF files"
-
-# 4. Check processing status
-"Show me the health status and processing statistics"
-```
-
-### 🏢 Project Management Setup
-```bash
-# 1. Create project database from template
-"Create a project tracker database called 'Q1 2025 Projects'"
-
-# 2. Bulk create projects from file list
-"Create project entries for all files in my Project-Plans folder"
-
-# 3. Monitor project database
-"Show usage statistics for the last 24 hours"
-
-# 4. Health check
-"Check API health with detailed metrics"
-```
-
-### 📊 Analytics & Monitoring
-```bash
-# Monitor workspace health
-"Check API health with full details"
-
-# Get usage insights
-"Show usage statistics for the past week"
-
-# File processing status  
-"List all active file watchers and their status"
-```
+#### Health & Analytics
+- `check_api_health` - Comprehensive API health monitoring
+- `get_usage_statistics` - Detailed API usage analytics
 
 ---
 
@@ -668,99 +322,7 @@ cat package.json | grep version
 |----------|-------------|----------|
 | `NOTION_API_KEY` | Notion integration token | Yes |
 
-### Cache File (`.notion-cache.json`)
-
-```json
-{
-  "conversationDbId": "uuid-of-conversation-database",
-  "projectDbId": "uuid-of-project-database",
-  "lastUpdated": "2025-01-01T00:00:00.000Z"
-}
-```
-
-### Gemini Extension Config (`gemini-extension.json`)
-
-```json
-{
-  "name": "notion-expert",
-  "description": "Full Notion workspace integration",
-  "mcpServers": {
-    "notion": {
-      "command": "node",
-      "args": ["dist/bundle.js"],
-      "timeout": 30
-    }
-  }
-}
-```
-
----
-
-## 🔐 Security
-
-- **No tokens in code**: API keys stored in OS credential managers
-- **No tokens in git**: `.gitignore` excludes all sensitive files
-- **Environment variable fallback**: Works if credential manager unavailable
-- **Local cache only**: Database IDs stored locally, not synced
-
-### Token Storage Locations
-
-| Platform | Storage | Security |
-|----------|---------|----------|
-| Windows | User environment variable | Process-isolated |
-| macOS | Keychain | Encrypted, requires unlock |
-| Linux | libsecret/GNOME Keyring | Encrypted, session-based |
-
----
-
-## 🐛 Troubleshooting
-
-### "Connection failed" or "ECONNRESET"
-
-1. Verify your token: Run setup script again
-2. Check Notion status: [status.notion.so](https://status.notion.so)
-3. Verify page sharing: Ensure pages are shared with integration
-
-### "Tool not found in registry"
-
-1. Run from project directory: `cd /path/to/extension && gemini`
-2. Rebuild: `npm run build`
-3. Re-link: `gemini extensions link .`
-
-### "Database IDs not configured"
-
-1. Run setup script: `.\setup-windows.ps1` or `./setup-unix.sh`
-2. Verify `.notion-cache.json` exists
-3. Check you selected databases during setup
-
-### "API key not found"
-
-**Windows:**
-```powershell
-# Check if set
-$env:NOTION_API_KEY
-
-# Set manually
-[System.Environment]::SetEnvironmentVariable("NOTION_API_KEY", "secret_xxx", "User")
-```
-
-**macOS:**
-```bash
-# Check keychain
-security find-generic-password -s "gemini-notion-expert" -a "NOTION_API_KEY" -w
-
-# Add manually
-security add-generic-password -s "gemini-notion-expert" -a "NOTION_API_KEY" -w "secret_xxx"
-```
-
-**Linux:**
-```bash
-# Check secret
-secret-tool lookup service gemini-notion-expert account NOTION_API_KEY
-
-# Store manually
-echo "secret_xxx" | secret-tool store --label="Notion API Key" service gemini-notion-expert account NOTION_API_KEY
-```
+Gemini CLI will prompt you for this automatically during first use.
 
 ---
 
@@ -784,165 +346,6 @@ gemini-notion-expert/
 ├── tsconfig.json
 └── README.md
 ```
-
----
-
-## 🔄 Version History & Changelog
-
-### v3.0.0 (2025-12-14) 🚀 **ENHANCED EDITION**
-**Major Release: Complete Automation Platform**
-
-#### 🆕 New Enhanced Features
-- **📄 File Processing Suite**: Upload, bulk operations, automated scanning
-- **🎯 Database Templates**: 4 pre-built templates (Document Scanner, Project Tracker, Meeting Notes, Task Management)
-- **📊 Health Analytics**: API monitoring, usage statistics, performance tracking  
-- **🔍 Advanced Search**: Enhanced search with analytics and filtering
-- **🤖 Automation Framework**: File watchers, bulk operations (framework ready)
-
-#### 📈 Enhanced Capabilities
-- **46 Total Tools** (+21% increase from 38 tools)
-- **8 New Enhanced Tools** built on research analysis
-- **Production Monitoring** with health checks and statistics
-- **Template-Based Workflows** for common automation scenarios
-- **File Processing Pipeline** ready for document automation
-
-#### 🔧 Technical Improvements
-- Enhanced server architecture with v3.0 naming
-- Comprehensive tool categorization and documentation
-- Production-ready monitoring and analytics
-- Maintained 100% backward compatibility with v2.8
-
-### v2.8.0 (2025-12-14) ⭐ **FOUNDATION RELEASE**
-#### 💾 Performance & Reliability
-- **TTL Caching**: Smart caching for schemas, lists, pages, users
-- **📊 Metrics**: Track API calls, latency, error rates  
-- **📝 Logging**: Structured logs with levels (debug/info/warn/error)
-- **📴 Offline Queue**: Queue operations when disconnected
-- **📑 5 Templates**: meeting-notes, project-brief, daily-standup, bug-report, code-review
-- **✅ Schema Validation**: Validate before API calls
-- **🏥 Health Check**: Monitor system status  
-- **📦 Batch Ops**: Create/archive pages, delete blocks in bulk
-- **🔢 38 Total Tools** (12 new advanced tools)
-
-### v2.7.0 (2025-12-14)
-#### ⚡ Network & Performance  
-- **Rate Limiting**: Token Bucket algorithm (3 requests/second)
-- **🔄 Retry Logic**: Exponential backoff for 429/5xx errors
-- **📄 Auto-Pagination**: Handle >100 database items automatically
-- **📦 Block Pagination**: Handle >100 blocks per page
-- **✂️ Content Chunking**: Split >50KB content automatically
-- **🔀 Batch Appending**: Handle >100 blocks per request
-- **🌐 Network Error Handling**: ECONNRESET, ETIMEDOUT recovery
-
-### v2.5.0 (2025-12-14)
-#### 🤖 AI Integration
-- **📋 Decision Tree**: Smart tool selection for AI
-- **📝 Workflow Guidance**: Step-by-step AI instructions  
-- **🔧 Context Files**: Enhanced AI understanding
-- **🚀 New Commands**: search-notion, recent-changes
-
-### v2.3.0 (2025-12-14)  
-#### 📦 Deployment
-- **esbuild Bundling**: Standalone installation (~640KB → 685KB in v3.0)
-- **🔧 MCP Configuration**: Proper server setup
-
-### v2.1.0 (2025-12-14)
-#### 🔗 Installation  
-- **GitHub Direct Install**: One-command installation
-- **📚 Troubleshooting**: Comprehensive debugging guide
-
-### v2.0.0 (2025-12-14)
-#### ✨ Core Platform
-- **25 Comprehensive Tools**: Full Notion API coverage
-- **🔐 Secure Credentials**: Cross-platform storage
-- **📝 Markdown Conversion**: Rich content support
-- **🔍 Full-Text Search**: Workspace-wide search
-- **💬 Comments**: Full collaboration support
-- **👥 User Management**: Team features
-- **📁 Project Tools**: Dedicated project management
-- **💾 Conversation Export**: Chat preservation
-- **🛠️ Database Shortcuts**: Simplified access
-
-### v1.0.0 (2025-12-13)
-#### 🎉 Initial Release
-- **Basic Operations**: Pages and databases
-- **Conversation Export**: Simple chat saving
-
----
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
-
----
-
-## 🙏 Acknowledgments
-
-- [Gemini CLI](https://github.com/google-gemini/gemini-cli) by Google
-- [Notion API](https://developers.notion.com/) by Notion
-- [Model Context Protocol](https://modelcontextprotocol.io/) for MCP server framework
-
----
-
-## ❓ Troubleshooting
-
-### "NOTION_API_KEY not set"
-
-Make sure you've run the setup script or set the credential manually:
-- Windows: `echo $env:NOTION_API_KEY`
-- macOS: `security find-generic-password -s "gemini-notion-expert" -a "NOTION_API_KEY" -w`
-- Linux: `secret-tool lookup service gemini-notion-expert account NOTION_API_KEY`
-
-### Extension Updates
-
-#### "Extension update failed"
-```bash
-# Force reinstall from GitHub
-gemini extensions uninstall notion-expert
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-```
-
-#### "Extension is already up to date" (but you know there's a new version)
-```bash
-# Check GitHub for latest version, then force install
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
-```
-
-#### Local development version not updating
-```bash
-cd /path/to/gemini-notion-expert
-git pull origin main
-npm install
-npm run build
-```
-
-### "Extension not loading"
-
-1. Rebuild: `npm run build`
-2. Relink: `gemini extensions uninstall notion-expert && gemini extensions link .`
-3. Check status: `gemini extensions list`
-
-### "API errors" or "object not found"
-
-- Verify your integration is shared with the page/database in Notion
-- Check your token at [Notion Integrations](https://www.notion.so/my-integrations)
-- Ensure token has correct capabilities (Content, Comments, User)
-
-### "Page not accessible"
-
-1. Open the page in Notion
-2. Click **Share** → **Add connections**
-3. Select your **Gemini CLI Extension** integration
 
 ---
 

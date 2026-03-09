@@ -1,6 +1,6 @@
 {
   "name": "notion-expert",
-  "version": "3.0.4",
+  "version": ".0.0",
   "description": "Notion Expert - Enhanced Notion integration for Gemini CLI - file uploads, automation, monitoring, plus 38+ comprehensive tools",
   "main": "dist/server.js",
   "type": "module",
@@ -9,10 +9,8 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "dev:legacy": "tsx watch src/server-legacy.ts",
     "build": "tsc && npm run bundle",
     "bundle": "esbuild dist/server.js --bundle --platform=node --target=node20 --format=esm --outfile=dist/bundle.js --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\"",
-    "bundle:legacy": "esbuild dist/server-legacy.js --bundle --platform=node --target=node20 --format=esm --outfile=dist/bundle.js --banner:js=\"import { createRequire } from 'module'; const require = createRequire(import.meta.url);\"",
     "start": "node dist/bundle.js",
     "test": "tsx tests/run-tests.ts",
     "test:enhanced": "node enhanced-api-test.js",
