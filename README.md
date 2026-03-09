@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-Server-purple.svg)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/Version-3.0.4-brightgreen.svg)](https://github.com/PatelPratikkumar/gemini-notion-expert/releases)
+[![Version](https://img.shields.io/badge/Version-3.0.4-brightgreen.svg)](https://github.com/andrecrjr/gemini-notion-expert-extension/releases)
 
 Transform your Notion workspace into a powerful automation hub with **46 comprehensive tools**, file processing, database templates, and intelligent monitoring.
 
@@ -16,7 +16,7 @@ Transform your Notion workspace into a powerful automation hub with **46 compreh
 **For Gemini CLI:**
 ```bash
 # 1. Install the extension
-gemini extensions install https://github.com/PatelPratikkumar/gemini-notion-expert --auto-update
+gemini extensions install https://github.com/andrecrjr/gemini-notion-expert-extension --auto-update
 
 # 2. Gemini CLI will prompt you for your Notion API key
 # Get your token from: https://www.notion.so/my-integrations
