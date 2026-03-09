@@ -13,10 +13,14 @@ Transform your Notion workspace into a powerful automation hub with **46 compreh
 
 ## ✨ Quick Start (3 Steps)
 
-**For Gemini CLI:**
+**For Gemini/Qwen CLI for extension:**
 ```bash
 # 1. Install the extension
 gemini extensions install https://github.com/andrecrjr/gemini-notion-expert-extension --auto-update
+
+# or
+
+qwen extensions install https://github.com/andrecrjr/gemini-notion-expert-extension --auto-update
 
 # 2. Gemini CLI will prompt you for your Notion API key
 # Get your token from: https://www.notion.so/my-integrations
@@ -25,7 +29,7 @@ gemini extensions install https://github.com/andrecrjr/gemini-notion-expert-exte
 gemini mcp list
 ```
 
-**For Qwen Code:**
+**For Qwen Code / Gemini if wants only MCP:**
 ```bash
 # 1. Register as MCP server
 qwen mcp add notion node "~/.gemini/extensions/notion-expert/dist/bundle.js"
