@@ -2376,7 +2376,17 @@ async function main() {
     await initialize();
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error('🚀 Notion MCP Server v3.0.1 running - Enhanced Edition with 46 tools (38 original + 8 enhanced)');
+    // MCP stdio mode detection for better client integration
+    const isMcpStdio = process.env.MCP_STDIO === 'true' || process.env.MCP_MODE === 'stdio';
+    if (isMcpStdio) {
+        // Clean stderr output for MCP clients (no emojis that might interfere with parsing)
+        console.error('[MCP] Notion MCP Server v3.0.4 connected via stdio');
+        console.error('[MCP] Tools available: 46 (38 core + 8 enhanced)');
+        console.error('[MCP] Ready for JSON-RPC requests');
+    }
+    else {
+        console.error('🚀 Notion MCP Server v3.0.4 running - Enhanced Edition with 46 tools (38 original + 8 enhanced)');
+    }
 }
 main().catch(err => {
     console.error('Fatal:', err);
