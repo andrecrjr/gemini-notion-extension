@@ -17,6 +17,7 @@ export function getCredential(name: string): string | null {
       case 'darwin':
         return getMacCredential(name);
       case 'linux':
+      case 'android':
         return getLinuxCredential(name);
       default:
         throw new Error(`Unsupported platform: ${platform()}`);
